@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truck Driver App</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1677ff;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background: #1677ff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #095dcc;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🚚 Truck Driver App</h1>
+
+  <h3>ড্রাইভার রেজিস্ট্রেশন</h3>
+
+  <input id="name" type="text" placeholder="ড্রাইভারের নাম">
+
+  <input id="phone" type="tel" placeholder="মোবাইল নম্বর">
+
+  <input id="truck_number" type="text" placeholder="ট্রাক নম্বর">
+
+  <select id="truck_type">
+    <option value="">ট্রাকের ধরন নির্বাচন করুন</option>
+    <option value="ট্রাক">ট্রাক</option>
+    <option value="কভার্ড ভ্যান">কভার্ড ভ্যান</option>
+    <option value="ডাম্প ট্রাক">ডাম্প ট্রাক</option>
+    <option value="পিকআপ">পিকআপ</option>
+  </select>
+
+  <input id="location" type="text" placeholder="বর্তমান অবস্থান">
+
+  <input id="rent" type="number" placeholder="ভাড়া (টাকা)">
+
+  <button onclick="registerDriver()">
+    ড্রাইভার রেজিস্টার করুন
+  </button>
+
+  <div id="message"></div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://qstotlvpbygjsirqrpfj.supabase.co";
+
+const SUPABASE_KEY =
+"আপনার_দেওয়া_legacy_anon_key_এখানে_বসাবেন";
+
+
+async function registerDriver() {
+
+  const name =
+    document.getElementById("name").value;
+
+  const phone =
+    document.getElementById("phone").value;
+
+  const truck_number =
+    document.getElementById("truck_number").value;
+
+  const truck_type =
+    document.getElementById("truck_type").value;
+
+  const location =
+    document.getElementById("location").value;
+
+  const rent =
+    document.getElementById("rent").value;
+
+
+  if (!name || !phone || !truck_number) {
+
+    document.getElementById("message").innerText =
+      "নাম, মোবাইল ও ট্রাক নম্বর দিন।";
+
+    return;
+  }
+
+
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/drivers`,
+    {
+      method: "POST",
+
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
+      },
+
+      body: JSON.stringify({
+
+        name: name,
+        phone: phone,
+        truck_number: truck_number,
+        truck_type: truck_type,
+        location: location,
+        rent: rent,
+        available: true
+
+      })
+    }
+  );
+
+
+  if (response.ok) {
+
+    document.getElementById("message").innerText =
+      "✅ ড্রাইভার সফলভাবে রেজিস্টার হয়েছে!";
+
+    document.getElementById("name").value = "";
+    document.getElementById("phone").value = "";
+    document.getElementById("truck_number").value = "";
+    document.getElementById("truck_type").value = "";
+    document.getElementById("location").value = "";
+    document.getElementById("rent").value = "";
+
+  } else {
+
+    const error = await response.text();
+
+    document.getElementById("message").innerText =
+      "❌ সমস্যা হয়েছে: " + error;
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
