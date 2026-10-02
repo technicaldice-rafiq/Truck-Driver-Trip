@@ -1,299 +1,174 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Truck Driver Trip</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>জমি মাপার মাস্টার V10</title>
 <style>
-body{
-font-family:Arial,sans-serif;
-background:#f2f4f7;
-margin:0;
-padding:15px;
-}
-
-.container{
-max-width:600px;
-margin:auto;
-}
-
-.card{
-background:white;
-padding:20px;
-margin-bottom:18px;
-border-radius:15px;
-box-shadow:0 3px 12px rgba(0,0,0,.1);
-}
-
-h1{
-text-align:center;
-color:#1677ff;
-}
-
-h2{
-color:#333;
-}
-
-input,select,button{
-width:100%;
-box-sizing:border-box;
-padding:13px;
-margin:7px 0;
-border-radius:8px;
-border:1px solid #ccc;
-font-size:16px;
-}
-
-button{
-background:#1677ff;
-color:white;
-border:0;
-font-weight:bold;
-}
-
-.search{
-background:#111827;
-}
-
-.driver{
-border:1px solid #ddd;
-padding:15px;
-border-radius:12px;
-margin-top:12px;
-}
-
-.call{
-display:inline-block;
-background:#16a34a;
-color:white;
-padding:10px;
-border-radius:7px;
-text-decoration:none;
-margin-right:5px;
-}
-
-.whatsapp{
-display:inline-block;
-background:#25D366;
-color:white;
-padding:10px;
-border-radius:7px;
-text-decoration:none;
-}
-
-.message{
-text-align:center;
-font-weight:bold;
-margin-top:10px;
-}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,"Noto Sans Bengali",sans-serif;background:#f4f7f9;color:#17212b}
+header{background:#0b6b4f;color:white;padding:17px 14px;position:sticky;top:0;z-index:20}h1{font-size:22px;margin:0}.sub{font-size:12px;opacity:.9}
+nav{display:flex;gap:6px;overflow:auto;background:white;padding:8px;position:sticky;top:70px;z-index:19;border-bottom:1px solid #ddd}nav button{border:0;background:#e7efeb;padding:10px 13px;border-radius:9px;font-weight:700;white-space:nowrap}nav button.active{background:#0b6b4f;color:#fff}
+main{max-width:1050px;margin:auto;padding:12px}.page{display:none}.page.active{display:block}.card{background:white;border:1px solid #e2e8eb;border-radius:14px;padding:15px;margin:10px 0;box-shadow:0 2px 10px #0000000b}
+h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}@media(max-width:650px){.grid{grid-template-columns:1fr}}
+label{font-weight:700;font-size:13px;display:block;margin-bottom:4px}input,textarea{width:100%;padding:11px;border:1px solid #cbd5da;border-radius:9px;font-size:15px}textarea{min-height:75px}
+button{cursor:pointer;border:0;border-radius:9px;padding:10px 13px;font-weight:700;background:#0b6b4f;color:#fff;margin:3px}button.gray{background:#52616b}button.red{background:#b42318}button.light{background:#e7efeb;color:#17212b}.actions{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.notice{background:#fff8dc;border-left:4px solid #d5a600;padding:10px;border-radius:7px;font-size:13px}.ok{color:#087443}.bad{color:#b42318}.muted{color:#687780;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #e4e8ea;text-align:left}th{background:#f0f4f5}.tablewrap{overflow:auto;max-height:520px}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat div{background:#edf7f3;padding:12px;border-radius:10px;text-align:center}.stat b{display:block;font-size:22px;color:#0b6b4f}
 </style>
 </head>
-
 <body>
+<header><h1>🗺️ জমি মাপার মাস্টার V10</h1><div class="sub">Supabase Online Database • Login • Search • Backup • CSV</div></header>
+<nav id="nav">
+<button class="active" data-page="home">হোম</button><button data-page="login">Login</button><button data-page="record">রেকর্ড</button><button data-page="search">Search</button><button data-page="backup">Backup</button><button data-page="settings">Supabase</button>
+</nav>
+<main>
+<section id="home" class="page active">
+<div class="card"><h2>📊 Online Database</h2><div class="stat"><div><b id="count">0</b> রেকর্ড</div><div><b id="userState">—</b> Login</div><div><b id="dbState">OFF</b> Database</div></div></div>
+<div class="card"><button onclick="showPage('record')">+ নতুন রেকর্ড</button><button onclick="showPage('search')">🔎 Search</button><button onclick="syncNow()">☁️ Sync</button></div>
+<div id="homeMsg" class="notice">প্রথমে Supabase Settings-এ URL ও Publishable/Anon Key বসান, তারপর Login করুন।</div>
+</section>
 
-<div class="container">
+<section id="login" class="page">
+<div class="card"><h2>🔐 Account Login</h2>
+<div class="grid"><div><label>Email</label><input id="email" type="email" placeholder="আপনার email"></div><div><label>Password</label><input id="password" type="password" placeholder="কমপক্ষে 6 অক্ষর"></div></div>
+<div class="actions"><button onclick="signUp()">Create Account</button><button onclick="signIn()">Login</button><button class="gray" onclick="signOut()">Logout</button></div>
+<div id="authMsg" class="muted"></div></div>
+</section>
 
-<h1>🚚 Truck Driver Trip</h1>
+<section id="record" class="page">
+<div class="card"><h2>📝 Online জমির রেকর্ড</h2>
+<input type="hidden" id="editId">
+<div class="grid">
+<div><label>জেলা</label><input id="district"></div><div><label>উপজেলা</label><input id="upazila"></div>
+<div><label>মৌজা</label><input id="mouza"></div><div><label>JL No.</label><input id="jl"></div>
+<div><label>দাগ</label><input id="dag"></div><div><label>খতিয়ান</label><input id="khatian"></div>
+<div><label>মালিক</label><input id="owner"></div><div><label>পরিমাণ (শতক)</label><input id="amount" type="number" step="any"></div>
+</div><div style="margin-top:10px"><label>নোট</label><textarea id="note"></textarea></div>
+<div class="actions"><button onclick="saveRecord()">☁️ Online Save</button><button class="light" onclick="clearForm()">Reset</button></div>
+<div id="recordMsg" class="muted"></div></div>
+</section>
 
-<div class="card">
+<section id="search" class="page">
+<div class="card"><h2>🔎 Online Search Database</h2>
+<div class="grid">
+<div><label>মৌজা</label><input id="sm" oninput="loadRecords()"></div><div><label>দাগ</label><input id="sd" oninput="loadRecords()"></div>
+<div><label>খতিয়ান</label><input id="sk" oninput="loadRecords()"></div><div><label>মালিক</label><input id="so" oninput="loadRecords()"></div>
+</div><div class="actions"><button class="light" onclick="clearSearch()">Reset</button><button onclick="exportCSV()">CSV / Excel</button></div></div>
+<div class="card"><div id="searchMsg" class="muted"></div><div class="tablewrap"><table><thead><tr><th>মৌজা</th><th>দাগ</th><th>খতিয়ান</th><th>মালিক</th><th>শতক</th><th>কাজ</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
+</section>
 
-<h2>👤 ড্রাইভার রেজিস্ট্রেশন</h2>
+<section id="backup" class="page">
+<div class="card"><h2>💾 Local Backup</h2><p class="muted">অনলাইন ডাটার পাশাপাশি একটি JSON backup রেখে দিন।</p><button onclick="backup()">⬇️ Download Backup</button><label style="display:inline-block;background:#52616b;color:#fff;padding:10px 13px;border-radius:9px;cursor:pointer">Restore JSON <input type="file" accept=".json" onchange="restore(event)" style="display:none"></label></div>
+</section>
 
-<input id="name" placeholder="ড্রাইভারের নাম">
+<section id="settings" class="page">
+<div class="card"><h2>⚙️ Supabase Settings</h2>
+<div class="notice">এখানে শুধু Supabase Project URL এবং Publishable/Anon Key দিন। <b>service_role/secret key কখনো এখানে দেবেন না।</b></div>
+<div style="margin-top:10px"><label>Supabase Project URL</label><input id="surl" placeholder="https://xxxxxxxx.supabase.co"></div>
+<div style="margin-top:10px"><label>Publishable / Anon Key</label><input id="skey" placeholder="sb_publishable_... বা পুরনো anon key"></div>
+<div class="actions"><button onclick="saveConfig()">💾 Save Settings</button><button class="gray" onclick="testConnection()">Test Connection</button></div>
+<div id="configMsg" class="muted"></div></div>
+<div class="card"><h2>🧩 Database Setup</h2><p>এই ZIP-এর <b>supabase_schema.sql</b> ফাইলটি Supabase SQL Editor-এ একবার Run করুন। তারপর এই অ্যাপে URL/Key দিয়ে Account তৈরি করুন।</p></div>
+</section>
+</main>
 
-<input id="phone" placeholder="মোবাইল নম্বর">
-
-<input id="truck_number" placeholder="ট্রাক নম্বর">
-
-<select id="truck_type">
-<option value="">ট্রাকের ধরন নির্বাচন করুন</option>
-<option value="ট্রাক">ট্রাক</option>
-<option value="কভার্ড ভ্যান">কভার্ড ভ্যান</option>
-<option value="ডাম্প ট্রাক">ডাম্প ট্রাক</option>
-<option value="পিকআপ">পিকআপ</option>
-</select>
-
-<input id="location" placeholder="বর্তমান অবস্থান">
-
-<input id="rent" type="number" placeholder="ভাড়া (টাকা)">
-
-<button onclick="registerDriver()">
-ড্রাইভার রেজিস্টার করুন
-</button>
-
-<div id="message" class="message"></div>
-
-</div>
-
-
-<div class="card">
-
-<h2>🔎 ড্রাইভার খুঁজুন</h2>
-
-<input id="search"
-placeholder="নাম, এলাকা বা ট্রাক নম্বর">
-
-<select id="searchType">
-
-<option value="">সব ধরনের ট্রাক</option>
-<option value="ট্রাক">ট্রাক</option>
-<option value="কভার্ড ভ্যান">কভার্ড ভ্যান</option>
-<option value="ডাম্প ট্রাক">ডাম্প ট্রাক</option>
-<option value="পিকআপ">পিকআপ</option>
-
-</select>
-
-<button class="search" onclick="searchDrivers()">
-🔎 ড্রাইভার খুঁজুন
-</button>
-
-<div id="drivers"></div>
-
-</div>
-
-</div>
-
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-
-const SUPABASE_URL =
-"https://qstotlvpbygjsirqrpfj.supabase.co";
-
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzdG90bHZwYnlnanNpcnFycGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NzU1MDksImV4cCI6MjEwNjQ1MTUwOX0.zZ08CnnMDzKJ4aHPvhyShxsu0mezeTsOAtnxcBVS-9U";
-
-
-async function registerDriver(){
-
-const name=document.getElementById("name").value.trim();
-const phone=document.getElementById("phone").value.trim();
-const truck_number=document.getElementById("truck_number").value.trim();
-const truck_type=document.getElementById("truck_type").value;
-const location=document.getElementById("location").value.trim();
-const rent=document.getElementById("rent").value;
-
-if(!name || !phone || !truck_number){
-
-document.getElementById("message").innerText=
-"❌ নাম, মোবাইল ও ট্রাক নম্বর দিন।";
-
-return;
+let client=null, session=null, allRows=[];
+const CFG='jomiV10SupabaseConfig', CACHE='jomiV10Cache';
+const $=id=>document.getElementById(id);
+function cleanAscii(v){return String(v||'').replace(/[\\u0000-\\u001F\\u007F-\\uFFFF]/g,'').trim()}
+function cfg(){try{const x=JSON.parse(localStorage.getItem(CFG)||'{}');return {url:cleanAscii(x.url),key:cleanAscii(x.key)}}catch(e){return {}}}
+function init(){
+ const c=cfg();$('surl').value=c.url||'';$('skey').value=c.key||'';
+ if(c.url&&c.key){
+   try{
+     client=supabase.createClient(c.url,c.key);
+     $('dbState').textContent='ON';
+     $('homeMsg').textContent='Supabase configured. Login করুন।';
+     $('homeMsg').className='notice';
+   }catch(e){msg('configMsg','Supabase config ভুল: '+e.message,'bad')}
+ }
+ if(client){
+   client.auth.getSession().then(({data,error})=>{
+     if(error){msg('configMsg','Session error: '+error.message,'bad');return}
+     session=data.session;updateState()
+   });
+   client.auth.onAuthStateChange((_e,s)=>{session=s;updateState()})
+ }
 }
-
-const response=await fetch(
-`${SUPABASE_URL}/rest/v1/drivers`,
-{
-method:"POST",
-
-headers:{
-"apikey":SUPABASE_KEY,
-"Authorization":`Bearer ${SUPABASE_KEY}`,
-"Content-Type":"application/json",
-"Prefer":"return=minimal"
-},
-
-body:JSON.stringify({
-name:name,
-phone:phone,
-truck_number:truck_number,
-truck_type:truck_type,
-location:location,
-rent:rent,
-available:true
-})
+function updateState(){$('userState').textContent=session?'YES':'NO';loadRecords()}
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='search')loadRecords()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+function msg(id,t,cl='muted'){$(id).textContent=t;$(id).className=cl}
+function saveConfig(){
+ const rawUrl=$('surl').value;
+ const rawKey=$('skey').value;
+ const url=cleanAscii(rawUrl).replace(/\\/$/,'');
+ const key=cleanAscii(rawKey);
+ if(!url||!key){msg('configMsg','URL এবং Key দুটোই দিন।','bad');return}
+ if(!/^https:\/\/[^\\s]+$/.test(url)){msg('configMsg','Project URL সঠিক নয়। Supabase থেকে Copy করুন।','bad');return}
+ if(!/^(sb_publishable_[A-Za-z0-9._-]+|eyJ[A-Za-z0-9._-]+)$/.test(key)){
+   msg('configMsg','Publishable/Anon key সঠিক নয়। Supabase থেকে Copy করুন।','bad');return
+ }
+ localStorage.setItem(CFG,JSON.stringify({url,key}));
+ location.reload()
 }
-);
-
-if(response.ok){
-
-document.getElementById("message").innerText=
-"✅ ড্রাইভার সফলভাবে রেজিস্টার হয়েছে!";
-
-document.getElementById("name").value="";
-document.getElementById("phone").value="";
-document.getElementById("truck_number").value="";
-document.getElementById("truck_type").value="";
-document.getElementById("location").value="";
-document.getElementById("rent").value="";
-
-}else{
-
-const error=await response.text();
-
-document.getElementById("message").innerText=
-"❌ Error: "+error;
+async function testConnection(){if(!client){msg('configMsg','আগে Settings Save করুন।','bad');return}try{const {error}=await client.from('land_records').select('id').limit(1);if(error)throw error;msg('configMsg','Database connection সফল।','ok')}catch(e){msg('configMsg','Connection error: '+e.message,'bad')}}
+async function signUp(){
+ if(!client)return msg('authMsg','Supabase Settings আগে সম্পন্ন করুন।','bad');
+ const email=$('email').value.trim();
+ const password=$('password').value;
+ if(!email||!password)return msg('authMsg','Email এবং Password দিন।','bad');
+ try{
+   const {error}=await client.auth.signUp({email,password});
+   if(error)throw error;
+   msg('authMsg','Account তৈরি হয়েছে। Email verification লাগতে পারে।','ok')
+ }catch(e){msg('authMsg',e.message,'bad')}
 }
-
+async function signIn(){
+ if(!client)return msg('authMsg','Supabase Settings আগে সম্পন্ন করুন।','bad');
+ const email=$('email').value.trim();
+ const password=$('password').value;
+ if(!email||!password)return msg('authMsg','Email এবং Password দিন।','bad');
+ try{
+   const {data,error}=await client.auth.signInWithPassword({email,password});
+   if(error)throw error;
+   session=data.session;msg('authMsg','Login সফল।','ok');updateState()
+ }catch(e){msg('authMsg',e.message,'bad')}
 }
-
-
-async function searchDrivers(){
-
-const search=document.getElementById("search").value.trim().toLowerCase();
-const type=document.getElementById("searchType").value;
-
-let url=
-`${SUPABASE_URL}/rest/v1/drivers?select=*`;
-
-if(type){
-url+=`&truck_type=eq.${encodeURIComponent(type)}`;
+async function signOut(){if(client)await client.auth.signOut();session=null;updateState();msg('authMsg','Logout হয়েছে।')}
+function form(){return {district:$('district').value.trim(),upazila:$('upazila').value.trim(),mouza:$('mouza').value.trim(),jl:$('jl').value.trim(),dag:$('dag').value.trim(),khatian:$('khatian').value.trim(),owner:$('owner').value.trim(),amount_shotok:$('amount').value?Number($('amount').value):null,note:$('note').value.trim()}}
+async function saveRecord(){
+ if(!client||!session)return msg('recordMsg','আগে Login করুন।','bad');
+ const data=form();let id=$('editId').value;
+ try{let res;
+ if(id)res=await client.from('land_records').update(data).eq('id',id).select().single();
+ else res=await client.from('land_records').insert({...data,user_id:session.user.id}).select().single();
+ if(res.error)throw res.error;msg('recordMsg','Online Save সফল।','ok');clearForm();loadRecords()
+ }catch(e){msg('recordMsg',e.message,'bad')}
 }
-
-const response=await fetch(url,{
-headers:{
-"apikey":SUPABASE_KEY,
-"Authorization":`Bearer ${SUPABASE_KEY}`
+function clearForm(){['editId','district','upazila','mouza','jl','dag','khatian','owner','amount','note'].forEach(x=>$(x).value='')}
+function editRow(r){$('editId').value=r.id;['district','upazila','mouza','jl','dag','khatian','owner','note'].forEach(k=>$(k).value=r[k]||'');$('amount').value=r.amount_shotok??'';showPage('record')}
+async function deleteRow(id){if(!confirm('এই রেকর্ড মুছবেন?'))return;const {error}=await client.from('land_records').delete().eq('id',id);if(error)alert(error.message);else loadRecords()}
+function match(r){const f={mouza:$('sm').value.toLowerCase(),dag:$('sd').value.toLowerCase(),khatian:$('sk').value.toLowerCase(),owner:$('so').value.toLowerCase()};return Object.entries(f).every(([k,v])=>!v||String(r[k]||'').toLowerCase().includes(v))}
+async function loadRecords(){
+ if(!client||!session){$('tbody').innerHTML='';$('count').textContent='0';return}
+ const {data,error}=await client.from('land_records').select('*').order('created_at',{ascending:false});
+ if(error){$('searchMsg').textContent=error.message;return}
+ allRows=(data||[]).filter(match);$('count').textContent=data?.length||0;$('searchMsg').textContent=`${allRows.length}টি রেকর্ড পাওয়া গেছে`;
+ $('tbody').innerHTML=allRows.map(r=>`<tr><td>${esc(r.mouza)}</td><td><b>${esc(r.dag)}</b></td><td>${esc(r.khatian)}</td><td>${esc(r.owner)}</td><td>${esc(r.amount_shotok??'')}</td><td><button class="light" onclick='editRow(${JSON.stringify(r)})'>Edit</button><button class="red" onclick="deleteRow('${r.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="6">কোনো রেকর্ড নেই</td></tr>'
 }
-});
-
-if(!response.ok){
-
-document.getElementById("drivers").innerHTML=
-"❌ ড্রাইভার লোড করা যায়নি।";
-
-return;
-}
-
-let data=await response.json();
-
-if(search){
-
-data=data.filter(d=>
-(d.name||"").toLowerCase().includes(search) ||
-(d.location||"").toLowerCase().includes(search) ||
-(d.truck_number||"").toLowerCase().includes(search)
-);
-
-}
-
-displayDrivers(data);
-
-}
-
-
-function displayDrivers(data){
-
-const box=document.getElementById("drivers");
-
-box.innerHTML="";
-
-if(data.length===0){
-
-box.innerHTML="<p>কোনো ড্রাইভার পাওয়া যায়নি।</p>";
-
-return;
-}
-
-data.forEach(driver=>{
-
-const phone=(driver.phone||"").replace(/\D/g,"");
-
-const whatsappNumber=
-phone.startsWith("0") ? "88"+phone : phone;
-
-const div=document.createElement("div");
-
-div.className="driver";
-
-div.inner
+function clearSearch(){['sm','sd','sk','so'].forEach(x=>$(x).value='');loadRecords()}
+function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
+function exportCSV(){const h=['district','upazila','mouza','jl','dag','khatian','owner','amount_shotok','note'];const rows=[h,...allRows.map(r=>h.map(k=>r[k]??''))].map(x=>x.map(csvCell).join(',')).join('\\r\\n');download('\\ufeff'+rows,'land-records.csv','text/csv;charset=utf-8')}
+function backup(){download(JSON.stringify({version:10,exportedAt:new Date().toISOString(),records:allRows},null,2),'land-backup.json','application/json')}
+function restore(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);localStorage.setItem(CACHE,JSON.stringify(d.records||[]));alert('Backup ফাইল local cache-এ রাখা হয়েছে। Online Restore করতে CSV/record save বা server-side import লাগবে।')}catch(e){alert('Backup ভুল')}};rd.readAsText(f)}
+function download(data,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function syncNow(){loadRecords();alert(session?'Online data refresh হয়েছে।':'আগে Login করুন।')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+init();
+</script>
+</body>
+</html>
